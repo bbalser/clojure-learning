@@ -30,12 +30,15 @@
         coin-total (reduce + (map determine-coin-value valid-coins))]
     (commit instance (update-state coin-total invalid-coins))))
 
+(defn- format-money [pennies]
+  (format "%.2f" (double (/ pennies 100))))
+
 (defn display [instance]
   (let [{total :total message :message} @instance]
     (cond
       (some? message) (do (commit instance (fn [state] (assoc state :message nil))) message)
       (= 0 total) "INSERT COIN"
-      :else (format "%.2f" (double (/ total 100))))))
+      :else (format-money total))))
 
 (defn coin-return [instance]
   (:coin-return @instance))
@@ -43,14 +46,15 @@
 (defn- complete-purchase [instance price]
   (commit instance (fn [state] (assoc state :total (- (:total @instance) price) :message "THANK YOU"))))
 
-(defn cola [instance]
-  (let [total (:total @instance)]
+(defn- dispense [instance product cost]
+  (let [total (:total @instance)
+        message (str "PRICE " (format-money cost))]
     (cond
-      (>= total 100) (do (complete-purchase instance 100) :cola)
-      :else (do (commit instance (fn [state] (assoc state :message "PRICE 1.00"))) nil))))
+      (>= total cost) (do (complete-purchase instance cost) product)
+      :else (do (commit instance (fn [state] (assoc state :message message))) nil))))
+
+(defn cola [instance]
+  (dispense instance :cola 100))
 
 (defn candy [instance]
-  (let [total (:total @instance)]
-    (cond
-      (>= total 65) (do (complete-purchase instance 65) :candy)
-      :else (do (commit instance (fn [state] (assoc state :message "PRICE 0.65"))) nil))))
+  (dispense instance :candy 65))
