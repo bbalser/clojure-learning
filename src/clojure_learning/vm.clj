@@ -44,7 +44,8 @@
   (:coin-return @instance))
 
 (defn- complete-purchase [instance price]
-  (commit instance (fn [state] (assoc state :total (- (:total @instance) price) :message "THANK YOU"))))
+  (commit instance (fn [state]
+                      (assoc state :total (- (:total @instance) price) :message "THANK YOU"))))
 
 (defn- dispense [instance product cost]
   (let [total (:total @instance)
@@ -58,3 +59,6 @@
 
 (defn candy [instance]
   (dispense instance :candy 65))
+
+(defn chips [instance]
+  (dispense instance :chips 50))

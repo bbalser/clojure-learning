@@ -38,4 +38,14 @@
       (is (= "0.65" (vm/display instance)))
       (is (= :candy (vm/candy instance)))
       (is (= "THANK YOU" (vm/display instance)))
+      (is (= "INSERT COIN" (vm/display instance)))))
+  (testing "Buying chips"
+    (let [instance (vm/new)]
+      (is (nil? (vm/chips instance)))
+      (is (= "PRICE 0.50" (vm/display instance)))
+      (is (= "INSERT COIN" (vm/display instance)))
+      (vm/insert instance ["QUARTER" "QUARTER"])
+      (is (= "0.50" (vm/display instance)))
+      (is (= :chips (vm/chips instance)))
+      (is (= "THANK YOU" (vm/display instance)))
       (is (= "INSERT COIN" (vm/display instance))))))
